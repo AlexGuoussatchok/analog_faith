@@ -1,3 +1,4 @@
+import 'package:analog_faith/screens/cameras_catalogue_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -112,8 +113,7 @@ class _CamerasCatalogueScreenState extends State<CamerasCatalogueScreen> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
-                      onPrimary: Colors.black,
+                      foregroundColor: Colors.black, backgroundColor: Colors.grey,
                       padding: const EdgeInsets.all(16.0),
                       alignment: Alignment.centerLeft,
                     ),
@@ -144,15 +144,21 @@ class _CamerasCatalogueScreenState extends State<CamerasCatalogueScreen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            // Handle selection change if needed
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CameraCatalogueDetailsScreen(
+                                  brand: brand,
+                                  model: model, // Pass the selected model
+                                ),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.grey,
-                            onPrimary: Colors.black,
+                            foregroundColor: Colors.black, backgroundColor: Colors.grey,
                             padding: const EdgeInsets.all(16.0),
                             alignment: Alignment.centerLeft,
                           ),
-                          child: Center( // Center-align the model name
+                          child: Center(
                             child: Text(
                               model,
                               style: const TextStyle(
@@ -161,6 +167,7 @@ class _CamerasCatalogueScreenState extends State<CamerasCatalogueScreen> {
                             ),
                           ),
                         ),
+
                       );
                     }).toList(),
                   ),
