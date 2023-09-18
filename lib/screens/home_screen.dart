@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:analog_faith/screens/catalogue_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -24,8 +25,10 @@ class HomeScreen extends StatelessWidget {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Add functionality for Catalogue button
-                  // Navigator.pushNamed(context, '/catalogue'); // Example navigation
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CatalogueScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey, // Change button color to gray
@@ -35,6 +38,7 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 32), // Change the font size here
                 ),
               ),
+
             ),
           ),
           Expanded(

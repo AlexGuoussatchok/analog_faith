@@ -1,38 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:analog_faith/screens/cameras_catalogue_screen.dart';
 
 class CatalogueScreen extends StatelessWidget {
-  const CatalogueScreen({super.key});
+  const CatalogueScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Catalogue'),
+        backgroundColor: Colors.grey, // Change AppBar color to gray
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/catalogue/cameras');
-              },
-              child: const Text('Cameras'),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black, // Border color
+                  width: 1.0, // Border width
+                ),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigate to the CamerasCatalogueScreen when the "Cameras" button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CamerasCatalogueScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey, // Change button color to gray
+                ),
+                child: const Text(
+                  'Cameras',
+                  style: TextStyle(fontSize: 32), // Change the font size here
+                ),
+              ),
+
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/catalogue/lenses');
-              },
-              child: const Text('Lenses'),
+          ),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black, // Border color
+                  width: 1.0, // Border width
+                ),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  // Add functionality for Lenses button
+                  // Navigator.pushNamed(context, '/lenses'); // Example navigation
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey, // Change button color to gray
+                ),
+                child: const Text(
+                  'Lenses',
+                  style: TextStyle(fontSize: 32), // Change the font size here
+                ),
+              ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/catalogue/films');
-              },
-              child: const Text('Films'),
+          ),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              margin: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black, // Border color
+                  width: 1.0, // Border width
+                ),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  // Add functionality for Films button
+                  // Navigator.pushNamed(context, '/films'); // Example navigation
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey, // Change button color to gray
+                ),
+                child: const Text(
+                  'Films',
+                  style: TextStyle(fontSize: 32), // Change the font size here
+                ),
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
