@@ -6,7 +6,7 @@ void main() {
 }
 
 class AnalogFaithApp extends StatelessWidget {
-  const AnalogFaithApp({super.key});
+  const AnalogFaithApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,10 @@ class AnalogFaithApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(),
+      home: const SafeArea(
+        // Wrap your HomeScreen with SafeArea
+        child: HomeScreen(),
+      ),
     );
   }
 }
