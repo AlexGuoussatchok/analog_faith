@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:analog_faith/screens/cameras_catalogue_screen.dart';
-import 'package:analog_faith/screens/lenses_catalogue_screen.dart'; // Import the Lenses Catalogue screen
+import 'package:analog_faith/screens/lenses_catalogue_screen.dart';
+import 'package:analog_faith/screens/films_catalogue_screen.dart';
+
 
 class CatalogueScreen extends StatelessWidget {
   const CatalogueScreen({Key? key}) : super(key: key);
@@ -82,8 +84,11 @@ class CatalogueScreen extends StatelessWidget {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Add functionality for Films button
-                  // Navigator.pushNamed(context, '/films'); // Example navigation
+                  // Navigate to the FilmsCatalogueScreen when the "Films" button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FilmsCatalogueScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey, // Change button color to gray
