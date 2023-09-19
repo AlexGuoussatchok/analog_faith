@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:analog_faith/screens/cameras_catalogue_screen.dart';
+import 'package:analog_faith/screens/lenses_catalogue_screen.dart'; // Import the Lenses Catalogue screen
 
 class CatalogueScreen extends StatelessWidget {
   const CatalogueScreen({Key? key}) : super(key: key);
@@ -39,7 +40,6 @@ class CatalogueScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 32), // Change the font size here
                 ),
               ),
-
             ),
           ),
           Expanded(
@@ -54,8 +54,11 @@ class CatalogueScreen extends StatelessWidget {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Add functionality for Lenses button
-                  // Navigator.pushNamed(context, '/lenses'); // Example navigation
+                  // Navigate to the LensesCatalogueScreen when the "Lenses" button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LensesCatalogueScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey, // Change button color to gray
