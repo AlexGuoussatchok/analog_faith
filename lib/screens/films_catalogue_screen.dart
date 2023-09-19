@@ -87,7 +87,7 @@ class _FilmsCatalogueScreenState extends State<FilmsCatalogueScreen> {
       ),
       body: Center(
         child: filmBrands == null
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : ListView.builder(
           itemCount: filmBrands!.length,
           itemBuilder: (context, index) {
