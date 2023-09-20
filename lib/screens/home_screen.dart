@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:analog_faith/screens/catalogue_screen.dart';
+import 'package:analog_faith/screens/inventory_screen.dart'; // Import the Inventory screen
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -38,7 +39,6 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 32), // Change the font size here
                 ),
               ),
-
             ),
           ),
           Expanded(
@@ -53,8 +53,11 @@ class HomeScreen extends StatelessWidget {
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Add functionality for Inventory button
-                  // Navigator.pushNamed(context, '/inventory'); // Example navigation
+                  // Navigate to the InventoryScreen when the Inventory button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => InventoryScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey, // Change button color to gray
