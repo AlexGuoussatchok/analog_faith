@@ -19,6 +19,26 @@ class _MyCamerasScreenState extends State<MyCamerasScreen> {
       appBar: AppBar(
         title: const Text('My Cameras'),
         backgroundColor: Colors.grey,
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'add_camera') {
+                // Handle the "Add a Camera" option here, navigate to the add camera screen.
+                Navigator.pushNamed(context, '/inventory/add_camera');
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'add_camera',
+                  child: Text('Add a Camera'),
+                ),
+                // Add more menu items if needed
+              ];
+            },
+          ),
+
+        ],
       ),
       body: FutureBuilder(
         // Use the database helper to fetch the camera inventory
@@ -48,14 +68,7 @@ class _MyCamerasScreenState extends State<MyCamerasScreen> {
           }
         },
       ),
-      // Add a floating action button to add new cameras
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigate to a screen to add new cameras (you can implement this screen)
-          // Example: Navigator.pushNamed(context, '/inventory/add_camera');
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
+
