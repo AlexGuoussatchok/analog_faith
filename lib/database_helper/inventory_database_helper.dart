@@ -79,4 +79,9 @@ class InventoryDatabaseHelper {
       return _database;
     }
   }
+  // Define the getMyCameras method to fetch camera inventory
+  Future<List<Map<String, dynamic>>> getMyCameras() async {
+    final db = await database;
+    return await db.query('my_cameras');
+  }
 }
