@@ -194,14 +194,17 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                 ),
               TextField(
                 controller: filmLoadedController,
+                enabled: false,
                 decoration: const InputDecoration(labelText: 'Film loaded'),
               ),
               TextField(
                 controller: filmLoadDateController,
+                enabled: false,
                 decoration: const InputDecoration(labelText: 'Film load date'),
               ),
               TextField(
                 controller: averagePriceController,
+                enabled: false,
                 decoration: const InputDecoration(
                     labelText: 'Camera average price'),
               ),
