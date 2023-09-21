@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class AddCameraScreen extends StatefulWidget {
-  const AddCameraScreen({super.key});
+  const AddCameraScreen({Key? key}) : super(key: key);
 
   @override
   _AddCameraScreenState createState() => _AddCameraScreenState();
 }
 
 class _AddCameraScreenState extends State<AddCameraScreen> {
+  List<String> cameraBrands = [];
+  String selectedBrand = ''; // Selected brand value
+
   // Define controllers for your text fields
   final TextEditingController brandController = TextEditingController();
   final TextEditingController modelController = TextEditingController();
@@ -20,6 +25,34 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
   final TextEditingController averagePriceController = TextEditingController();
   final TextEditingController commentsController = TextEditingController();
 
+
+  Future<void> fetchCameraBrands() async {
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    final brands = await db.query('camera_brands', columns: ['camera_brand']);
+    final uniqueBrands = <String>{};
+
+    for (final brandMap in brands) {
+      final brand = brandMap['camera_brand'].toString();
+      uniqueBrands.add(brand);
+    }
+
+    cameraBrands = uniqueBrands.toList();
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCameraBrands();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,13 +63,26 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextField(
-                controller: brandController,
-                decoration: const InputDecoration(labelText: 'Brand'),
-              ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (cameraBrands.isNotEmpty) // Check if cameraBrands is not empty
+                  DropdownButtonFormField<String>(
+                    value: selectedBrand.isNotEmpty ? selectedBrand : cameraBrands[0], // Use the first brand as a default value
+                    items: cameraBrands.map((String brand) {
+                      return DropdownMenuItem<String>(
+                        value: brand,
+                        child: Text(brand),
+                      );
+                    }).toList(),
+                    onChanged: (String? value) {
+                      setState(() {
+                        selectedBrand = value!;
+                      });
+                    },
+                    decoration: const InputDecoration(labelText: 'Brand'),
+                  ),
               TextField(
                 controller: modelController,
                 decoration: const InputDecoration(labelText: 'Model'),
@@ -55,7 +101,8 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
               ),
               TextField(
                 controller: conditionController,
-                decoration: const InputDecoration(labelText: 'Camera condition'),
+                decoration: const InputDecoration(
+                    labelText: 'Camera condition'),
               ),
               TextField(
                 controller: filmLoadedController,
@@ -67,7 +114,8 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
               ),
               TextField(
                 controller: averagePriceController,
-                decoration: const InputDecoration(labelText: 'Camera average price'),
+                decoration: const InputDecoration(
+                    labelText: 'Camera average price'),
               ),
               TextField(
                 controller: commentsController,
@@ -97,27 +145,11 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                 },
                 child: const Text('Save'),
               ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    // Dispose of the text controllers to avoid memory leaks
-    brandController.dispose();
-    modelController.dispose();
-    serialNumberController.dispose();
-    purchaseDateController.dispose();
-    pricePaidController.dispose();
-    conditionController.dispose();
-    filmLoadedController.dispose();
-    filmLoadDateController.dispose();
-    averagePriceController.dispose();
-    commentsController.dispose();
-    // Dispose of other controllers similarly
-    super.dispose();
   }
 }
