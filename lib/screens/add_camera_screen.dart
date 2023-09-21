@@ -126,12 +126,10 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                   },
                   decoration: const InputDecoration(labelText: 'Model'),
                 ),
-
-
-
                 TextField(
                 controller: serialNumberController,
                 decoration: const InputDecoration(labelText: 'Serial Number'),
+                keyboardType: TextInputType.number, // Set the keyboard type to numeric
               ),
               TextField(
                 controller: purchaseDateController,
