@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutter/services.dart';
+import 'package:analog_faith/lists/camera_conditions_list.dart';
 
 class AddCameraScreen extends StatefulWidget {
   const AddCameraScreen({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
   String selectedBrand = ''; // Selected brand value
   String selectedModel = ''; // Selected model value
   DateTime? selectedPurchaseDate; // Store the selected purchase date
+  String selectedCondition = CameraConditions.conditions[0];
 
   // Define controllers for your text fields
   final TextEditingController brandController = TextEditingController();
@@ -175,11 +177,21 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                     suffixText: 'EUR', // Display EUR as suffix
                   ),
                 ),
-              TextField(
-                controller: conditionController,
-                decoration: const InputDecoration(
-                    labelText: 'Camera condition'),
-              ),
+                DropdownButtonFormField<String>(
+                  value: selectedCondition,
+                  items: CameraConditions.conditions.map((String condition) {
+                    return DropdownMenuItem<String>(
+                      value: condition,
+                      child: Text(condition),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedCondition = value!;
+                    });
+                  },
+                  decoration: const InputDecoration(labelText: 'Camera Condition'),
+                ),
               TextField(
                 controller: filmLoadedController,
                 decoration: const InputDecoration(labelText: 'Film loaded'),
