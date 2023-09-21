@@ -26,9 +26,9 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
   final TextEditingController purchaseDateController = TextEditingController();
   final TextEditingController pricePaidController = TextEditingController();
   final TextEditingController conditionController = TextEditingController();
-  final TextEditingController filmLoadedController = TextEditingController();
-  final TextEditingController filmLoadDateController = TextEditingController();
-  final TextEditingController averagePriceController = TextEditingController();
+  // final TextEditingController filmLoadedController = TextEditingController();
+  // final TextEditingController filmLoadDateController = TextEditingController();
+  // final TextEditingController averagePriceController = TextEditingController();
   final TextEditingController commentsController = TextEditingController();
 
 
@@ -100,7 +100,8 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
         title: const Text('Add a Camera'),
         backgroundColor: Colors.grey,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
@@ -172,7 +173,7 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$')),
                   ],
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Price paid (EUR)',
                     suffixText: 'EUR', // Display EUR as suffix
                   ),
@@ -192,24 +193,25 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                   },
                   decoration: const InputDecoration(labelText: 'Camera Condition'),
                 ),
-              TextField(
-                controller: filmLoadedController,
-                enabled: false,
-                decoration: const InputDecoration(labelText: 'Film loaded'),
-              ),
-              TextField(
-                controller: filmLoadDateController,
-                enabled: false,
-                decoration: const InputDecoration(labelText: 'Film load date'),
-              ),
-              TextField(
-                controller: averagePriceController,
-                enabled: false,
-                decoration: const InputDecoration(
-                    labelText: 'Camera average price'),
-              ),
+              // TextField(
+              //   controller: filmLoadedController,
+              //   enabled: false,
+              //   decoration: const InputDecoration(labelText: 'Film loaded'),
+              // ),
+              // TextField(
+              //   controller: filmLoadDateController,
+              //   enabled: false,
+              //   decoration: const InputDecoration(labelText: 'Film load date'),
+              // ),
+              // TextField(
+              //   controller: averagePriceController,
+              //   enabled: false,
+              //   decoration: const InputDecoration(
+              //       labelText: 'Camera average price'),
+              // ),
               TextField(
                 controller: commentsController,
+                maxLength: 200,
                 decoration: const InputDecoration(labelText: 'Comments'),
               ),
               // Add more text fields for other camera details
@@ -224,9 +226,9 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                       : '';
                   final pricePaid = pricePaidController.text;
                   final condition = conditionController.text;
-                  final filmLoaded = filmLoadedController.text;
-                  final filmLoadDate = filmLoadDateController.text;
-                  final averagePrice = averagePriceController.text;
+                  // final filmLoaded = filmLoadedController.text;
+                  // final filmLoadDate = filmLoadDateController.text;
+                  // final averagePrice = averagePriceController.text;
                   final comments = commentsController.text;
                   // Retrieve values for other fields similarly
 
