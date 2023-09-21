@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/services.dart';
 
 class AddCameraScreen extends StatefulWidget {
   const AddCameraScreen({Key? key}) : super(key: key);
@@ -163,10 +164,17 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                     ),
                   ),
                 ),
-              TextField(
-                controller: pricePaidController,
-                decoration: const InputDecoration(labelText: 'Price paid'),
-              ),
+                TextField(
+                  controller: pricePaidController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$')),
+                  ],
+                  decoration: InputDecoration(
+                    labelText: 'Price paid (EUR)',
+                    suffixText: 'EUR', // Display EUR as suffix
+                  ),
+                ),
               TextField(
                 controller: conditionController,
                 decoration: const InputDecoration(
@@ -196,7 +204,9 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                   final brand = brandController.text;
                   final model = modelController.text;
                   final serialNumber = serialNumberController.text;
-                  final purchaseDate = purchaseDateController.text;
+                  final purchaseDate = selectedPurchaseDate != null
+                      ? '${selectedPurchaseDate!.year}-${selectedPurchaseDate!.month.toString().padLeft(2, '0')}-${selectedPurchaseDate!.day.toString().padLeft(2, '0')}'
+                      : '';
                   final pricePaid = pricePaidController.text;
                   final condition = conditionController.text;
                   final filmLoaded = filmLoadedController.text;
