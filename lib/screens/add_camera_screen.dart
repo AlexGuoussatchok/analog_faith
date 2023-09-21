@@ -11,7 +11,11 @@ class AddCameraScreen extends StatefulWidget {
 
 class _AddCameraScreenState extends State<AddCameraScreen> {
   List<String> cameraBrands = [];
+  List<String> cameraModels = [];
   String selectedBrand = ''; // Selected brand value
+  String selectedModel = ''; // Selected model value
+
+
 
   // Define controllers for your text fields
   final TextEditingController brandController = TextEditingController();
@@ -46,6 +50,28 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
     }
   }
 
+  Future<void> fetchCameraModels(String brand) async {
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    final tableName = '${brand.toLowerCase()}_cameras_catalogue'; // Generate the table name
+    final models = await db.query(tableName, columns: ['camera_name']);
+    final uniqueModels = <String>{}; // Use a set literal to ensure uniqueness
+
+    for (final modelMap in models) {
+      final model = modelMap['camera_name'].toString();
+      uniqueModels.add(model);
+    }
+
+    cameraModels = uniqueModels.toList(); // Convert back to a list
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+
 
   @override
   void initState() {
@@ -79,15 +105,31 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                     onChanged: (String? value) {
                       setState(() {
                         selectedBrand = value!;
+                        cameraModels = []; // Clear the previous models when the brand changes
                       });
+                      fetchCameraModels(selectedBrand);
                     },
                     decoration: const InputDecoration(labelText: 'Brand'),
                   ),
-              TextField(
-                controller: modelController,
-                decoration: const InputDecoration(labelText: 'Model'),
-              ),
-              TextField(
+                DropdownButtonFormField<String>(
+                  value: selectedModel.isNotEmpty && cameraModels.contains(selectedModel) ? selectedModel : null,
+                  items: cameraModels.map((String model) {
+                    return DropdownMenuItem<String>(
+                      value: model,
+                      child: Text(model),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    setState(() {
+                      selectedModel = value ?? '';
+                    });
+                  },
+                  decoration: const InputDecoration(labelText: 'Model'),
+                ),
+
+
+
+                TextField(
                 controller: serialNumberController,
                 decoration: const InputDecoration(labelText: 'Serial Number'),
               ),
