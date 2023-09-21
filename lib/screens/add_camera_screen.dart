@@ -14,8 +14,7 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
   List<String> cameraModels = [];
   String selectedBrand = ''; // Selected brand value
   String selectedModel = ''; // Selected model value
-
-
+  DateTime? selectedPurchaseDate; // Store the selected purchase date
 
   // Define controllers for your text fields
   final TextEditingController brandController = TextEditingController();
@@ -71,7 +70,19 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
     }
   }
 
-
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedPurchaseDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedPurchaseDate) {
+      setState(() {
+        selectedPurchaseDate = picked;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -131,10 +142,27 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
                 decoration: const InputDecoration(labelText: 'Serial Number'),
                 keyboardType: TextInputType.number, // Set the keyboard type to numeric
               ),
-              TextField(
-                controller: purchaseDateController,
-                decoration: const InputDecoration(labelText: 'Purchase date'),
-              ),
+                InkWell(
+                  onTap: () {
+                    _selectDate(context); // Show date picker on tap
+                  },
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Purchase date',
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          selectedPurchaseDate != null
+                              ? '${selectedPurchaseDate!.year}-${selectedPurchaseDate!.month.toString().padLeft(2, '0')}-${selectedPurchaseDate!.day.toString().padLeft(2, '0')}'
+                              : 'Select a date',
+                        ),
+                        const Icon(Icons.calendar_today),
+                      ],
+                    ),
+                  ),
+                ),
               TextField(
                 controller: pricePaidController,
                 decoration: const InputDecoration(labelText: 'Price paid'),
