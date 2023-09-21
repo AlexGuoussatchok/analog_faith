@@ -84,4 +84,30 @@ class InventoryDatabaseHelper {
     final db = await database;
     return await db.query('my_cameras');
   }
+
+  Future<int> addCamera(
+      String brand,
+      String model,
+      String serialNumber,
+      String purchaseDate,
+      double pricePaid,
+      String condition,
+      String comments,
+      ) async {
+    final db = await database;
+    final id = await db.insert(
+      'my_cameras',
+      {
+        'brand': brand,
+        'model': model,
+        'serial_number': serialNumber,
+        'purchase_date': purchaseDate,
+        'price_paid': pricePaid,
+        'condition': condition,
+        'comments': comments,
+      },
+    );
+    return id;
+  }
+
 }

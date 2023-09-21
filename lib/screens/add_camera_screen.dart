@@ -3,6 +3,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutter/services.dart';
 import 'package:analog_faith/lists/camera_conditions_list.dart';
+import 'package:analog_faith/database_helper/inventory_database_helper.dart';
 
 class AddCameraScreen extends StatefulWidget {
   const AddCameraScreen({Key? key}) : super(key: key);
@@ -216,28 +217,34 @@ class _AddCameraScreenState extends State<AddCameraScreen> {
               ),
               // Add more text fields for other camera details
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   // Retrieve the input values from the text controllers
-                  final brand = brandController.text;
-                  final model = modelController.text;
+                  final brand = selectedBrand;
+                  final model = selectedModel;
                   final serialNumber = serialNumberController.text;
                   final purchaseDate = selectedPurchaseDate != null
                       ? '${selectedPurchaseDate!.year}-${selectedPurchaseDate!.month.toString().padLeft(2, '0')}-${selectedPurchaseDate!.day.toString().padLeft(2, '0')}'
                       : '';
-                  final pricePaid = pricePaidController.text;
-                  final condition = conditionController.text;
-                  // final filmLoaded = filmLoadedController.text;
-                  // final filmLoadDate = filmLoadDateController.text;
-                  // final averagePrice = averagePriceController.text;
+                  final pricePaid = double.tryParse(pricePaidController.text) ?? 0.0; // Parse as double, default to 0.0 if not valid
+                  final condition = selectedCondition;
                   final comments = commentsController.text;
+
                   // Retrieve values for other fields similarly
 
                   // Now, you can save these values to your database using the InventoryDatabaseHelper
-                  // Example: InventoryDatabaseHelper().addCamera(brand, model, serialNumber, ...);
+                  final insertedId = await InventoryDatabaseHelper().addCamera(
+                    brand,
+                    model,
+                    serialNumber,
+                    purchaseDate,
+                    pricePaid,
+                    condition,
+                    comments,
+                  );
 
-                  // After saving, you can navigate back to the camera list screen
                   Navigator.pop(context);
                 },
+
                 child: const Text('Save'),
               ),
               ],
