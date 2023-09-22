@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:analog_faith/database_helper/inventory_database_helper.dart';
 
+
 class InventoryScreen extends StatelessWidget {
   // Initialize the database helper
   final InventoryDatabaseHelper databaseHelper = InventoryDatabaseHelper();

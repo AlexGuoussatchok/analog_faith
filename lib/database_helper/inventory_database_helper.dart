@@ -43,6 +43,7 @@ class InventoryDatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         brand TEXT,
         model TEXT,
+        mount TEXT,
         serial_number TEXT,
         purchase_date TEXT,
         price_paid REAL,
@@ -109,5 +110,11 @@ class InventoryDatabaseHelper {
     );
     return id;
   }
+
+  Future<List<Map<String, dynamic>>> getMyLenses() async {
+    final db = await database;
+    return await db.query('my_lenses');
+  }
+
 
 }
