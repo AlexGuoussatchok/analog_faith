@@ -25,7 +25,7 @@ class AnalogFaithApp extends StatelessWidget {
         '/inventory': (context) => InventoryScreen(),
         '/inventory/my_cameras': (context) => const MyCamerasScreen(),
         '/inventory/add_camera': (context) => const AddCameraScreen(),
-        '/inventory/my_lenses': (context) => MyLensesScreen(),
+        '/inventory/my_lenses': (context) => const MyLensesScreen(),
         // Define other routes as needed
       },
       initialRoute: '/',
