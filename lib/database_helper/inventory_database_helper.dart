@@ -116,5 +116,33 @@ class InventoryDatabaseHelper {
     return await db.query('my_lenses');
   }
 
+  Future<int> addLens(
+      String brand,
+      String model,
+      String mount,
+      String serialNumber,
+      String purchaseDate,
+      double pricePaid,
+      String condition,
+      String comments,
+      ) async {
+    final db = await database;
+    final id = await db.insert(
+      'my_lenses',
+      {
+        'brand': brand,
+        'model': model,
+        'mount': mount,
+        'serial_number': serialNumber,
+        'purchase_date': purchaseDate,
+        'price_paid': pricePaid,
+        'condition': condition,
+        'comments': comments,
+      },
+    );
+    return id;
+  }
+
+
 
 }

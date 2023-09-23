@@ -1,3 +1,4 @@
+import 'package:analog_faith/screens/add_lenses_screen.dart';
 import 'package:analog_faith/screens/my_lenses_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:analog_faith/screens/home_screen.dart';
@@ -26,6 +27,7 @@ class AnalogFaithApp extends StatelessWidget {
         '/inventory/my_cameras': (context) => const MyCamerasScreen(),
         '/inventory/add_camera': (context) => const AddCameraScreen(),
         '/inventory/my_lenses': (context) => const MyLensesScreen(),
+        '/inventory/add_lens': (context) => const AddLensesScreen(),
         // Define other routes as needed
       },
       initialRoute: '/',
