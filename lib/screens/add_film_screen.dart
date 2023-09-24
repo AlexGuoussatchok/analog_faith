@@ -46,6 +46,8 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
     // Initialize the filmTypeController with the selectedFilmType
     filmTypeController.text = selectedFilmType ?? '';
     isFilmExpired = false;
+    // Set the default value for Films Quantity to 1
+    quantityController.text = '1';
   }
 
   Future<void> fetchBrands() async {
