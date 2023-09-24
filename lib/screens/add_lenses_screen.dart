@@ -29,6 +29,7 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
 
   String selectedBrand = '';
   String selectedModel = '';
+  String selectedMount = '';
 
   Future<void> fetchLensBrands() async {
     final databasesPath = await getDatabasesPath();
@@ -57,7 +58,7 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
     final db = await openDatabase(path);
 
     final tableName = '${brand.toLowerCase()}_lenses_catalogue'; // Generate the table name
-    final models = await db.query(tableName, columns: ['model']);
+    final models = await db.query(tableName, columns: ['model', 'mount']); // Fetch the mount value too
     final uniqueModels = <String>{};
 
     for (final modelMap in models) {
@@ -71,6 +72,35 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
     if (mounted) {
       setState(() {});
     }
+  }
+
+  Future<String> findMountForModel(String model) async {
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    // Construct the table name based on the selected brand (you might need to adjust this logic)
+    final tableName = '${selectedBrand.toLowerCase()}_lenses_catalogue';
+
+    // Query the database to find the mount for the selected model
+    final mountData = await db.query(tableName,
+      columns: ['mount'],
+      where: 'model = ?',
+      whereArgs: [model],
+    );
+
+    if (mountData.isNotEmpty) {
+      return mountData[0]['mount'].toString();
+    }
+
+    // If no mount data is found, return an empty string
+    return '';
+  }
+
+  Future<void> updateSelectedMount() async {
+    // Find and set the corresponding mount value
+    selectedMount = await findMountForModel(selectedModel);
+    setState(() {});
   }
 
   @override
@@ -93,7 +123,7 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
           children: <Widget>[
             // Add form fields for lens information
             DropdownButtonFormField<String>(
-              value: selectedBrand.isNotEmpty ? selectedBrand : lensBrands.isNotEmpty ? lensBrands[0] : null,
+              value: selectedBrand.isNotEmpty ? selectedBrand : null, // Set initial value to null
               items: lensBrands.map((String brand) {
                 return DropdownMenuItem<String>(
                   value: brand,
@@ -102,33 +132,44 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
               }).toList(),
               onChanged: (String? value) {
                 setState(() {
-                  selectedBrand = value!;
+                  selectedBrand = value ?? '';
                   lensModels = []; // Clear the previous models when the brand changes
+                  selectedModel = ''; // Reset selected model
+                  selectedMount = ''; // Reset selected mount
                 });
-                fetchLensModels(selectedBrand); // Fetch lens models based on the selected brand
+
+                if (selectedBrand.isNotEmpty) {
+                  fetchLensModels(selectedBrand); // Fetch lens models based on the selected brand
+                }
               },
               decoration: const InputDecoration(labelText: 'Brand'),
             ),
 
             DropdownButtonFormField<String>(
-              value: selectedModel.isNotEmpty && lensModels.contains(selectedModel) ? selectedModel : null,
+              value: selectedModel.isNotEmpty ? selectedModel : null, // Set initial value to null
               items: lensModels.map((String model) {
                 return DropdownMenuItem<String>(
                   value: model,
                   child: Text(model),
                 );
-              }).toList(),
+              }).toList()
+                ..sort(),
               onChanged: (String? value) {
                 setState(() {
                   selectedModel = value ?? '';
+                  updateSelectedMount();
                 });
               },
               decoration: const InputDecoration(labelText: 'Model'),
             ),
+
+
+            // Automatically fill the 'Mount' input field
             TextFormField(
-              controller: mountController,
+              controller: TextEditingController(text: selectedMount),
               decoration: const InputDecoration(labelText: 'Mount'),
             ),
+
             TextFormField(
               controller: serialNumberController,
               decoration: const InputDecoration(labelText: 'Serial Number'),
@@ -157,8 +198,8 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
                 // Add a lens to the database
                 await databaseHelper.addLens(
                   brandController.text,
-                  modelController.text,
-                  mountController.text,
+                  selectedModel, // Use the selected model
+                  selectedMount, // Use the selected mount
                   serialNumberController.text,
                   purchaseDateController.text,
                   double.tryParse(pricePaidController.text) ?? 0.0,
