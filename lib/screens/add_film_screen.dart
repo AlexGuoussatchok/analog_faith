@@ -25,6 +25,10 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
   List<String> brandList = [];
   List<String> filmNameList = [];
 
+  String? selectedBrand;
+  String? selectedFilmName;
+  String? selectedFilmType;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +39,9 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
     if (brandList.isNotEmpty) {
       brandController.text = brandList.first;
     }
+
+    // Initialize the filmTypeController with the selectedFilmType
+    filmTypeController.text = selectedFilmType ?? '';
   }
 
   Future<void> fetchBrands() async {
@@ -82,6 +89,36 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
     }
   }
 
+  Future<void> fetchFilmType(String? selectedBrand, String? selectedFilmName) async {
+    if (selectedBrand == null || selectedFilmName == null) {
+      return;
+    }
+
+    print('Fetching film type for brand: $selectedBrand, film name: $selectedFilmName');
+
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    // Construct the table name dynamically.
+    final tableName = '${selectedBrand.toLowerCase()}_films_catalogue';
+
+    final filmTypeQuery = await db.query(
+      tableName,
+      columns: ['film_type'],
+      where: 'film_name = ?',
+      whereArgs: [selectedFilmName],
+    );
+
+    if (filmTypeQuery.isNotEmpty) {
+      final filmType = filmTypeQuery.first['film_type'].toString();
+      setState(() {
+        filmTypeController.text = filmType;
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +131,7 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
         child: Column(
           children: <Widget>[
             DropdownButtonFormField<String>(
-              value: brandController.text.isNotEmpty ? brandController.text : null,
+              value: selectedBrand,
               items: brandList.map((String brand) {
                 return DropdownMenuItem<String>(
                   value: brand,
@@ -103,13 +140,19 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               }).toList(),
               onChanged: (String? value) {
                 setState(() {
-                  brandController.text = value ?? '';
+                  selectedBrand = value;
 
-                  // Reset the film name when the brand changes
-                  nameController.text = '';
+                  // Reset film name and type when the brand changes
+                  selectedFilmName = null;
+                  selectedFilmType = null;
+
+                  // Reset the film type text field
+                  filmTypeController.text = '';
 
                   // Fetch film names based on the selected brand.
                   fetchFilmNames(value ?? '');
+
+                  print('Selected brand: $value');
                 });
               },
               decoration: const InputDecoration(labelText: 'Brand'),
@@ -117,7 +160,7 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
 
 
             DropdownButtonFormField<String>(
-              value: nameController.text.isNotEmpty ? nameController.text : null,
+              value: selectedFilmName,
               items: filmNameList.map((String filmName) {
                 return DropdownMenuItem<String>(
                   value: filmName,
@@ -126,7 +169,10 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               }).toList(),
               onChanged: (String? value) {
                 setState(() {
-                  nameController.text = value ?? '';
+                  selectedFilmName = value;
+
+                  // Fetch film type based on the selected brand and film name.
+                  fetchFilmType(selectedBrand, value);
                 });
               },
               decoration: const InputDecoration(labelText: 'Film Name'),
@@ -137,6 +183,7 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               controller: filmTypeController,
               decoration: const InputDecoration(labelText: 'Film Type'),
             ),
+
             TextFormField(
               controller: filmSizeController,
               decoration: const InputDecoration(labelText: 'Film Size'),
