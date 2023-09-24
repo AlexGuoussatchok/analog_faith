@@ -17,7 +17,6 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
   TextEditingController filmSizeController = TextEditingController();
   TextEditingController isoController = TextEditingController();
   TextEditingController framesNumberController = TextEditingController();
-  TextEditingController filmExpiredController = TextEditingController();
   TextEditingController expirationDateController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController pricePaidController = TextEditingController();
@@ -30,6 +29,7 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
   String? selectedFilmName;
   String? selectedFilmType;
   String? selectedFilmSize;
+  bool? isFilmExpired;
 
 
   @override
@@ -45,6 +45,7 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
 
     // Initialize the filmTypeController with the selectedFilmType
     filmTypeController.text = selectedFilmType ?? '';
+    isFilmExpired = false;
   }
 
   Future<void> fetchBrands() async {
@@ -244,10 +245,39 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               decoration: const InputDecoration(labelText: 'Frames Number'),
             ),
 
-            TextFormField(
-              controller: filmExpiredController,
-              decoration: const InputDecoration(labelText: 'Is Film Expired'),
+            Row(
+              children: <Widget>[
+                const Text('Is Film Expired:'),
+                const SizedBox(width: 16.0), // Add spacing between label and radio buttons
+                Expanded(
+                  child: Row(
+                    children: <Widget>[
+                      Radio<bool>(
+                        value: true,
+                        groupValue: isFilmExpired,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isFilmExpired = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('Expired'),
+                      Radio<bool>(
+                        value: false,
+                        groupValue: isFilmExpired,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isFilmExpired = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text('Not Expired'),
+                    ],
+                  ),
+                ),
+              ],
             ),
+
             TextFormField(
               controller: expirationDateController,
               decoration: const InputDecoration(labelText: 'Film Expiration date'),
@@ -287,7 +317,6 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
     filmSizeController.dispose();
     isoController.dispose();
     framesNumberController.dispose();
-    filmExpiredController.dispose();
     expirationDateController.dispose();
     quantityController.dispose();
     pricePaidController.dispose();
