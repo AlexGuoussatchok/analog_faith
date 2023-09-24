@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:analog_faith/database_helper/inventory_database_helper.dart';
+import 'package:analog_faith/screens/my_cameras_details_screen.dart';
 
 
 class MyCamerasScreen extends StatefulWidget {
@@ -57,11 +58,24 @@ class _MyCamerasScreenState extends State<MyCamerasScreen> {
               itemCount: camerasList.length,
               itemBuilder: (context, index) {
                 final camera = camerasList[index];
-                return ListTile(
-                  title: Text(camera['brand'] + ' ' + camera['model']),
-                  subtitle: Text('Serial Number: ${camera['serial_number']}'),
-                  // You can display more camera details here as needed
-                  // Add edit and delete functionality if required
+                return InkWell(
+                  onTap: () {
+                    // Navigate to MyCamerasDetailsScreen and pass camera data
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MyCamerasDetailsScreen(
+                          cameraData: camera,
+                        ),
+                      ),
+                    );
+                  },
+                  child: ListTile(
+                    title: Text(camera['brand'] + ' ' + camera['model']),
+                    subtitle: Text('Serial Number: ${camera['serial_number']}'),
+                    // You can display more camera details here as needed
+                    // Add edit and delete functionality if required
+                  ),
                 );
               },
             );
