@@ -119,6 +119,34 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
     }
   }
 
+  Future<void> fetchISO(String? selectedBrand, String? selectedFilmName) async {
+    if (selectedBrand == null || selectedFilmName == null) {
+      return;
+    }
+
+    print('Fetching ISO for brand: $selectedBrand, film name: $selectedFilmName');
+
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    // Construct the table name dynamically.
+    final tableName = '${selectedBrand.toLowerCase()}_films_catalogue';
+
+    final isoQuery = await db.query(
+      tableName,
+      columns: ['film_speed'],
+      where: 'film_name = ?',
+      whereArgs: [selectedFilmName],
+    );
+
+    if (isoQuery.isNotEmpty) {
+      final isoValue = isoQuery.first['film_speed'].toString();
+      setState(() {
+        isoController.text = isoValue;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,9 +174,9 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
                   // Reset film name and type when the brand changes
                   selectedFilmName = null;
                   selectedFilmType = null;
-
-                  // Reset the film type text field
                   filmTypeController.text = '';
+                  isoController.text = '';
+                  framesNumberController.text = '';
 
                   // Fetch film names based on the selected brand.
                   fetchFilmNames(value ?? '');
@@ -166,17 +194,19 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
                   child: Text(filmName),
                 );
               }).toList(),
-              onChanged: (String? value) {
+              onChanged: (String? value) async {
                 setState(() {
                   selectedFilmName = value;
 
                   // Fetch film type based on the selected brand and film name.
                   fetchFilmType(selectedBrand, value);
+
+                  // Fetch ISO based on the selected film name.
+                  fetchISO(selectedBrand, value);
                 });
               },
               decoration: const InputDecoration(labelText: 'Film Name'),
             ),
-
 
             TextFormField(
               controller: filmTypeController,
@@ -194,20 +224,26 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               onChanged: (String? value) {
                 setState(() {
                   selectedFilmSize = value;
+
+                  // Set the default frame number based on the selected film size
+                  framesNumberController.text = FilmSizesList.defaultFrameNumbers[value ?? ''].toString();
                 });
               },
               decoration: const InputDecoration(labelText: 'Film Size'),
             ),
 
 
+
             TextFormField(
               controller: isoController,
               decoration: const InputDecoration(labelText: 'Film ISO'),
-              ),
+            ),
+
             TextFormField(
               controller: framesNumberController,
               decoration: const InputDecoration(labelText: 'Frames Number'),
             ),
+
             TextFormField(
               controller: filmExpiredController,
               decoration: const InputDecoration(labelText: 'Is Film Expired'),
