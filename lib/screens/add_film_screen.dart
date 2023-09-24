@@ -125,8 +125,6 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
       return;
     }
 
-    print('Fetching ISO for brand: $selectedBrand, film name: $selectedFilmName');
-
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, 'catalogue.db');
     final db = await openDatabase(path);
@@ -178,6 +176,7 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
                   filmTypeController.text = '';
                   isoController.text = '';
                   framesNumberController.text = '';
+                  expirationDateController.text = '';
 
                   // Fetch film names based on the selected brand.
                   fetchFilmNames(value ?? '');
@@ -281,7 +280,73 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
             TextFormField(
               controller: expirationDateController,
               decoration: const InputDecoration(labelText: 'Film Expiration date'),
+              onTap: () async {
+                final DateTime currentDate = DateTime.now();
+                DateTime selectedDate = currentDate;
+
+                final BuildContext dialogContext = context; // Capture the context
+
+                final year = await showDialog<int>(
+                  context: dialogContext, // Use the captured context
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Select Year'),
+                      content: SizedBox(
+                        width: double.maxFinite,
+                        child: ListView.builder(
+                          itemCount: currentDate.year - 1964, // Minimum year is 1965
+                          itemBuilder: (BuildContext context, int index) {
+                            final int year = currentDate.year - index;
+                            return ListTile(
+                              title: Text(year.toString()),
+                              onTap: () {
+                                selectedDate = DateTime(year, currentDate.month);
+                                Navigator.of(context).pop(year);
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                );
+
+                if (year != null) {
+                  final month = await showDialog<int>(
+                    context: dialogContext, // Use the captured context
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Select Month'),
+                        content: SizedBox(
+                          width: double.maxFinite,
+                          child: ListView.builder(
+                            itemCount: 12, // 12 months
+                            itemBuilder: (BuildContext context, int index) {
+                              final int month = index + 1;
+                              return ListTile(
+                                title: Text(month.toString()),
+                                onTap: () {
+                                  selectedDate = DateTime(selectedDate.year, month);
+                                  Navigator.of(context).pop(month);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  );
+
+                  if (month != null) {
+                    final String formattedDate = '${selectedDate.year}-${month.toString().padLeft(2, '0')}';
+                    setState(() {
+                      expirationDateController.text = formattedDate;
+                    });
+                  }
+                }
+              },
             ),
+
             TextFormField(
               controller: quantityController,
               decoration: const InputDecoration(labelText: 'Films Quantity'),
