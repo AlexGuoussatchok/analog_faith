@@ -23,6 +23,7 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
   TextEditingController commentsController = TextEditingController();
 
   List<String> brandList = [];
+  List<String> filmNameList = [];
 
   @override
   void initState() {
@@ -57,6 +58,30 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
     }
   }
 
+  Future<void> fetchFilmNames(String selectedBrand) async {
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    // Construct the table name dynamically.
+    final tableName = '${selectedBrand.toLowerCase()}_films_catalogue';
+
+    final filmNames = await db.query(tableName, columns: ['film_name']);
+    final uniqueFilmNames = <String>{};
+
+    for (final filmNameMap in filmNames) {
+      final filmName = filmNameMap['film_name'].toString();
+      uniqueFilmNames.add(filmName);
+    }
+
+    // Convert the unique film names to a list and sort them.
+    filmNameList = uniqueFilmNames.toList()..sort();
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,15 +104,35 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               onChanged: (String? value) {
                 setState(() {
                   brandController.text = value ?? '';
+
+                  // Reset the film name when the brand changes
+                  nameController.text = '';
+
+                  // Fetch film names based on the selected brand.
+                  fetchFilmNames(value ?? '');
                 });
               },
               decoration: const InputDecoration(labelText: 'Brand'),
             ),
 
-            TextFormField(
-              controller: nameController,
+
+            DropdownButtonFormField<String>(
+              value: nameController.text.isNotEmpty ? nameController.text : null,
+              items: filmNameList.map((String filmName) {
+                return DropdownMenuItem<String>(
+                  value: filmName,
+                  child: Text(filmName),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  nameController.text = value ?? '';
+                });
+              },
               decoration: const InputDecoration(labelText: 'Film Name'),
             ),
+
+
             TextFormField(
               controller: filmTypeController,
               decoration: const InputDecoration(labelText: 'Film Type'),
