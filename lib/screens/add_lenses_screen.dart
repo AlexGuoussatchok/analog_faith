@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:analog_faith/database_helper/inventory_database_helper.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class AddLensesScreen extends StatefulWidget {
   const AddLensesScreen({Key? key}) : super(key: key);
@@ -22,6 +24,38 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
   final TextEditingController conditionController = TextEditingController();
   final TextEditingController commentsController = TextEditingController();
 
+  List<String> lensBrands = [];
+
+  String selectedBrand = '';
+
+  Future<void> fetchLensBrands() async {
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    final brands = await db.query('lenses_brands', columns: ['lenses_brand']);
+    final uniqueBrands = <String>{};
+
+    for (final brandMap in brands) {
+      final brand = brandMap['lenses_brand'].toString();
+      uniqueBrands.add(brand);
+    }
+
+    lensBrands = uniqueBrands.toList();
+    lensBrands.sort(); // Sort the lensBrands alphabetically
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLensBrands(); // Fetch lens brands when the screen initializes
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,10 +68,22 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
         child: Column(
           children: <Widget>[
             // Add form fields for lens information
-            TextFormField(
-              controller: brandController,
+            DropdownButtonFormField<String>(
+              value: selectedBrand.isNotEmpty ? selectedBrand : lensBrands.isNotEmpty ? lensBrands[0] : null,
+              items: lensBrands.map((String brand) {
+                return DropdownMenuItem<String>(
+                  value: brand,
+                  child: Text(brand),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedBrand = value!;
+                });
+              },
               decoration: const InputDecoration(labelText: 'Brand'),
             ),
+
             TextFormField(
               controller: modelController,
               decoration: const InputDecoration(labelText: 'Model'),
