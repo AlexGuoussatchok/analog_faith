@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:analog_faith/lists/film_sizes.dart';
 
 class AddFilmScreen extends StatefulWidget {
   const AddFilmScreen({Key? key}) : super(key: key);
@@ -28,6 +29,8 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
   String? selectedBrand;
   String? selectedFilmName;
   String? selectedFilmType;
+  String? selectedFilmSize;
+
 
   @override
   void initState() {
@@ -94,8 +97,6 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
       return;
     }
 
-    print('Fetching film type for brand: $selectedBrand, film name: $selectedFilmName');
-
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, 'catalogue.db');
     final db = await openDatabase(path);
@@ -151,8 +152,6 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
 
                   // Fetch film names based on the selected brand.
                   fetchFilmNames(value ?? '');
-
-                  print('Selected brand: $value');
                 });
               },
               decoration: const InputDecoration(labelText: 'Brand'),
@@ -184,10 +183,23 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               decoration: const InputDecoration(labelText: 'Film Type'),
             ),
 
-            TextFormField(
-              controller: filmSizeController,
+            DropdownButtonFormField<String>(
+              value: selectedFilmSize,
+              items: FilmSizesList.conditions.map((String size) {
+                return DropdownMenuItem<String>(
+                  value: size,
+                  child: Text(size),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedFilmSize = value;
+                });
+              },
               decoration: const InputDecoration(labelText: 'Film Size'),
             ),
+
+
             TextFormField(
               controller: isoController,
               decoration: const InputDecoration(labelText: 'Film ISO'),
