@@ -5,7 +5,8 @@ class InventoryDatabaseHelper {
   late Database _database;
 
   // Singleton pattern to ensure only one instance of the database helper
-  static final InventoryDatabaseHelper _instance = InventoryDatabaseHelper._internal();
+  static final InventoryDatabaseHelper _instance = InventoryDatabaseHelper
+      ._internal();
 
   factory InventoryDatabaseHelper() {
     return _instance;
@@ -80,21 +81,20 @@ class InventoryDatabaseHelper {
       return _database;
     }
   }
+
   // Define the getMyCameras method to fetch camera inventory
   Future<List<Map<String, dynamic>>> getMyCameras() async {
     final db = await database;
     return await db.query('my_cameras');
   }
 
-  Future<int> addCamera(
-      String brand,
+  Future<int> addCamera(String brand,
       String model,
       String serialNumber,
       String purchaseDate,
       double pricePaid,
       String condition,
-      String comments,
-      ) async {
+      String comments,) async {
     final db = await database;
     final id = await db.insert(
       'my_cameras',
@@ -116,16 +116,14 @@ class InventoryDatabaseHelper {
     return await db.query('my_lenses');
   }
 
-  Future<int> addLens(
-      String brand,
+  Future<int> addLens(String brand,
       String model,
       String mount,
       String serialNumber,
       String purchaseDate,
       double pricePaid,
       String condition,
-      String comments,
-      ) async {
+      String comments,) async {
     final db = await database;
     final id = await db.insert(
       'my_lenses',
@@ -143,9 +141,44 @@ class InventoryDatabaseHelper {
     return id;
   }
 
-  //Future<List<Map<String, dynamic>>> getFilms() async {
-   // final db = await instance.database;
-   // return await db.query('films'); // 'films' should be replaced with your film table name
+  static const String filmTable = 'my_films';
+
+  // Add a method to get film inventory
+  Future<List<Map<String, dynamic>>> getMyFilms() async {
+    final db = await database;
+    return await db.query(filmTable);
   }
 
+  // Add a method to add a film to the inventory
+  Future<int> addFilm(String brand,
+      String filmName,
+      String filmType,
+      String filmSize,
+      String filmIso,
+      int framesNumber,
+      bool filmExpired,
+      String expirationDate,
+      int quantity,
+      double pricePaid,
+      String comments,) async {
+    final db = await database;
+    final id = await db.insert(
+      filmTable,
+      {
+        'brand': brand,
+        'film_name': filmName,
+        'film_type': filmType,
+        'film_size': filmSize,
+        'film_iso': filmIso,
+        'frames_number': framesNumber,
+        'film_expired': filmExpired ? 1 : 0, // Convert boolean to integer
+        'expiration_date': expirationDate,
+        'quantity': quantity,
+        'price_paid': pricePaid,
+        'comments': comments,
+      },
+    );
+    return id;
+  }
 
+}

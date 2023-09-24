@@ -363,19 +363,53 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               ),
             ),
 
-            TextFormField(
+            TextField(
               controller: commentsController,
+              maxLength: 200,
               decoration: const InputDecoration(labelText: 'Comments'),
             ),
 
             ElevatedButton(
-              onPressed: () {
-                // Add film to the database or perform the desired action
-                // You can access the entered values using nameController.text and formatController.text
-                // Add your logic here
+              onPressed: () async {
+                // Retrieve the values entered by the user from your controllers
+                final brand = selectedBrand;
+                final String filmName = selectedFilmName ?? '';
+                final String filmType = filmTypeController.text;
+                final String filmSize = selectedFilmSize ?? '';
+                final String iso = isoController.text;
+                final int framesNumber = int.tryParse(framesNumberController.text) ?? 0;
+                final bool expired = isFilmExpired ?? false;
+                final String expirationDate = expirationDateController.text;
+                final int quantity = int.tryParse(quantityController.text) ?? 1;
+                final double pricePaid = double.tryParse(pricePaidController.text) ?? 0.0;
+                final String comments = commentsController.text;
+
+                // TODO: Implement database logic to save the film data.
+                // Example (replace with your actual implementation):
+                final database = await openDatabase('inventory.db');
+                await database.insert(
+                  'my_films',
+                  {
+                    'brand': brand,
+                    'film_name': filmName,
+                    'film_type': filmType,
+                    'film_size': filmSize,
+                    'film_iso': iso,
+                    'frames_number': framesNumber,
+                    'film_expired': expired ? 1 : 0,
+                    'expiration_date': expirationDate,
+                    'quantity': quantity,
+                    'price_paid': pricePaid,
+                    'comments': comments,
+                  },
+                );
+
+                // Once data is saved, you can show a confirmation message or navigate to another screen
               },
               child: const Text('Save Film'),
             ),
+
+
           ],
         ),
       ),
