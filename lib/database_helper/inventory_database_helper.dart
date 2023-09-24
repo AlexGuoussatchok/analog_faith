@@ -143,6 +143,9 @@ class InventoryDatabaseHelper {
     return id;
   }
 
+  //Future<List<Map<String, dynamic>>> getFilms() async {
+   // final db = await instance.database;
+   // return await db.query('films'); // 'films' should be replaced with your film table name
+  }
 
 
-}
