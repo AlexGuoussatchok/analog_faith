@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:analog_faith/database_helper/inventory_database_helper.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/services.dart';
+import 'package:analog_faith/lists/lenses_condition_list.dart';
 
 class AddLensesScreen extends StatefulWidget {
   const AddLensesScreen({Key? key}) : super(key: key);
@@ -30,6 +32,8 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
   String selectedBrand = '';
   String selectedModel = '';
   String selectedMount = '';
+  DateTime? selectedPurchaseDate;
+  String selectedCondition = LensesConditions.conditions[0];
 
   Future<void> fetchLensBrands() async {
     final databasesPath = await getDatabasesPath();
@@ -101,6 +105,20 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
     // Find and set the corresponding mount value
     selectedMount = await findMountForModel(selectedModel);
     setState(() {});
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedPurchaseDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedPurchaseDate) {
+      setState(() {
+        selectedPurchaseDate = picked;
+      });
+    }
   }
 
   bool isNumericKeyboard = false;
@@ -179,36 +197,77 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
                   : TextInputType.text,   // Alphanumeric keyboard
             ),
 
-            TextFormField(
-              controller: purchaseDateController,
-              decoration: const InputDecoration(labelText: 'Purchase Date'),
+            InkWell(
+              onTap: () {
+                _selectDate(context); // Show date picker on tap
+              },
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: 'Purchase date',
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      selectedPurchaseDate != null
+                          ? '${selectedPurchaseDate!.year}-${selectedPurchaseDate!.month.toString().padLeft(2, '0')}-${selectedPurchaseDate!.day.toString().padLeft(2, '0')}'
+                          : 'Select a date',
+                    ),
+                    const Icon(Icons.calendar_today),
+                  ],
+                ),
+              ),
             ),
-            TextFormField(
+
+
+            TextField(
               controller: pricePaidController,
-              decoration: const InputDecoration(labelText: 'Price Paid'),
               keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{0,2})?$')),
+              ],
+              decoration: const InputDecoration(
+                labelText: 'Price paid (EUR)',
+                suffixText: 'EUR', // Display EUR as suffix
+              ),
             ),
-            TextFormField(
-              controller: conditionController,
-              decoration: const InputDecoration(labelText: 'Condition'),
+
+
+            DropdownButtonFormField<String>(
+              value: selectedCondition,
+              items: LensesConditions.conditions.map((String condition) {
+                return DropdownMenuItem<String>(
+                  value: condition,
+                  child: Text(condition),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  selectedCondition = value!;
+                });
+              },
+              decoration: const InputDecoration(labelText: 'Camera Condition'),
             ),
-            TextFormField(
+
+            TextField(
               controller: commentsController,
+              maxLength: 200,
               decoration: const InputDecoration(labelText: 'Comments'),
-            ),
-            const SizedBox(height: 16.0), // Add spacing
+            ), // Add spacing
 
             ElevatedButton(
               onPressed: () async {
                 // Add a lens to the database
                 await databaseHelper.addLens(
-                  brandController.text,
+                  selectedBrand,
                   selectedModel, // Use the selected model
                   selectedMount, // Use the selected mount
                   serialNumberController.text,
-                  purchaseDateController.text,
+                  selectedPurchaseDate != null
+                      ? '${selectedPurchaseDate?.year}-${selectedPurchaseDate?.month.toString().padLeft(2, '0')}-${selectedPurchaseDate?.day.toString().padLeft(2, '0')}'
+                      : '', // Use the selected purchase date
                   double.tryParse(pricePaidController.text) ?? 0.0,
-                  conditionController.text,
+                  selectedCondition,
                   commentsController.text,
                 );
 
