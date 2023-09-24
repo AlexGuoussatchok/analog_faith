@@ -353,10 +353,16 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
               controller: quantityController,
               decoration: const InputDecoration(labelText: 'Films Quantity'),
             ),
+
             TextFormField(
               controller: pricePaidController,
-              decoration: const InputDecoration(labelText: 'Price Paid'),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Price Paid',
+                suffixText: '€', // Add Euro sign as suffix
+              ),
             ),
+
             TextFormField(
               controller: commentsController,
               decoration: const InputDecoration(labelText: 'Comments'),
