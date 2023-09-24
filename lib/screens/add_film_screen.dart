@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class AddFilmScreen extends StatefulWidget {
   const AddFilmScreen({Key? key}) : super(key: key);
@@ -20,6 +22,41 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
   TextEditingController pricePaidController = TextEditingController();
   TextEditingController commentsController = TextEditingController();
 
+  List<String> brandList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // Load the brands from the database when the screen initializes
+    fetchBrands();
+
+    // Set the initial value for brandController if brandList is not empty
+    if (brandList.isNotEmpty) {
+      brandController.text = brandList.first;
+    }
+  }
+
+  Future<void> fetchBrands() async {
+    final databasesPath = await getDatabasesPath();
+    final path = join(databasesPath, 'catalogue.db');
+    final db = await openDatabase(path);
+
+    final brands = await db.query('film_brands', columns: ['brand']);
+    final uniqueBrands = <String>{};
+
+    for (final brandMap in brands) {
+      final brand = brandMap['brand'].toString();
+      uniqueBrands.add(brand);
+    }
+
+    // Convert the unique brands to a list and sort them
+    brandList = uniqueBrands.toList()..sort();
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,10 +68,22 @@ class _AddFilmScreenState extends State<AddFilmScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            TextFormField(
-              controller: brandController,
+            DropdownButtonFormField<String>(
+              value: brandController.text.isNotEmpty ? brandController.text : null,
+              items: brandList.map((String brand) {
+                return DropdownMenuItem<String>(
+                  value: brand,
+                  child: Text(brand),
+                );
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  brandController.text = value ?? '';
+                });
+              },
               decoration: const InputDecoration(labelText: 'Brand'),
             ),
+
             TextFormField(
               controller: nameController,
               decoration: const InputDecoration(labelText: 'Film Name'),
