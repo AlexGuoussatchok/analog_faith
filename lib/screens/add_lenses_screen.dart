@@ -103,12 +103,13 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
     setState(() {});
   }
 
+  bool isNumericKeyboard = false;
+
   @override
   void initState() {
     super.initState();
     fetchLensBrands(); // Fetch lens brands when the screen initializes
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +174,11 @@ class _AddLensesScreenState extends State<AddLensesScreen> {
             TextFormField(
               controller: serialNumberController,
               decoration: const InputDecoration(labelText: 'Serial Number'),
+              keyboardType: isNumericKeyboard
+                  ? TextInputType.number // Numeric keyboard
+                  : TextInputType.text,   // Alphanumeric keyboard
             ),
+
             TextFormField(
               controller: purchaseDateController,
               decoration: const InputDecoration(labelText: 'Purchase Date'),
