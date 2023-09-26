@@ -1,14 +1,51 @@
+import 'package:analog_faith/screens/my_films_developing_notes_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:analog_faith/database_helper/darkroom_notes_database_helper.dart';
 
-class DarkroomScreen extends StatelessWidget {
-  const DarkroomScreen({super.key});
+class DarkroomScreen extends StatefulWidget {
+  const DarkroomScreen({Key? key}) : super(key: key);
+
+  @override
+  _DarkroomScreenState createState() => _DarkroomScreenState();
+}
+
+class _DarkroomScreenState extends State<DarkroomScreen> {
+  late DarkroomNotesDatabaseHelper _databaseHelper;
+
+  @override
+  void initState() {
+    super.initState();
+    _databaseHelper = DarkroomNotesDatabaseHelper();
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Initialize the 'darkroom_notes' database when the screen opens
+    _initializeDatabase();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Darkroom'),
         backgroundColor: Colors.grey,
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'develop_film') {
+                // Handle the "Develop a Film" option here.
+                // You can navigate to a screen for film development.
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'develop_film',
+                  child: Text('Develop a Film'),
+                ),
+                // Add more menu items if needed
+              ];
+            },
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -33,18 +70,33 @@ class DarkroomScreen extends StatelessWidget {
       ),
       child: ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/darkroom/my_films_developing_notes');
+          if (buttonText == "My Films Developing Notes") {
+            // Navigate to the My Films Developing Notes screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MyFilmsDevelopingNotesScreen(),
+              ),
+            );
+          } else {
+            // Handle other button actions
+          }
         },
         style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white, backgroundColor: Colors.grey, // Change the text color
-          textStyle: const TextStyle(fontSize: 28), // Change the text size
-          padding: const EdgeInsets.all(16), // Adjust the padding
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.grey,
+          textStyle: const TextStyle(fontSize: 28),
+          padding: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // Adjust the border radius
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
-        child: Text(buttonText), // Replace with your button's name
+        child: Text(buttonText),
       ),
     );
+  }
+
+  Future<void> _initializeDatabase() async {
+    await _databaseHelper.initializeDatabase();
   }
 }
