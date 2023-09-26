@@ -1,6 +1,7 @@
+import 'package:analog_faith/screens/darkroom_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:analog_faith/screens/catalogue_screen.dart';
-import 'package:analog_faith/screens/inventory_screen.dart'; // Import the Inventory screen
+import 'package:analog_faith/screens/inventory_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -10,7 +11,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Analog Faith'),
-        backgroundColor: Colors.grey, // Change AppBar color to gray
+        backgroundColor: Colors.grey,
       ),
       body: Column(
         children: <Widget>[
@@ -20,8 +21,8 @@ class HomeScreen extends StatelessWidget {
               margin: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.black, // Border color
-                  width: 1.0, // Border width
+                  color: Colors.black,
+                  width: 1.0,
                 ),
               ),
               child: ElevatedButton(
@@ -32,11 +33,11 @@ class HomeScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey, // Change button color to gray
+                  backgroundColor: Colors.grey,
                 ),
                 child: const Text(
                   'Catalogue',
-                  style: TextStyle(fontSize: 32), // Change the font size here
+                  style: TextStyle(fontSize: 32),
                 ),
               ),
             ),
@@ -47,24 +48,23 @@ class HomeScreen extends StatelessWidget {
               margin: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.black, // Border color
-                  width: 1.0, // Border width
+                  color: Colors.black,
+                  width: 1.0,
                 ),
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to the InventoryScreen when the Inventory button is pressed
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => InventoryScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey, // Change button color to gray
+                  backgroundColor: Colors.grey,
                 ),
                 child: const Text(
                   'Inventory',
-                  style: TextStyle(fontSize: 32), // Change the font size here
+                  style: TextStyle(fontSize: 32),
                 ),
               ),
             ),
@@ -75,21 +75,23 @@ class HomeScreen extends StatelessWidget {
               margin: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: Colors.black, // Border color
-                  width: 1.0, // Border width
+                  color: Colors.black,
+                  width: 1.0,
                 ),
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Add functionality for Darkroom button
-                  // Navigator.pushNamed(context, '/darkroom'); // Example navigation
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const DarkroomScreen()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey, // Change button color to gray
+                  backgroundColor: Colors.grey,
                 ),
                 child: const Text(
                   'Darkroom',
-                  style: TextStyle(fontSize: 32), // Change the font size here
+                  style: TextStyle(fontSize: 32),
                 ),
               ),
             ),

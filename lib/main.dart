@@ -7,6 +7,7 @@ import 'package:analog_faith/screens/my_cameras_screen.dart';
 import 'package:analog_faith/screens/add_camera_screen.dart';
 import 'package:analog_faith/screens/my_films_screen.dart';
 import 'package:analog_faith/screens/add_film_screen.dart';
+import 'package:analog_faith/screens/darkroom_screen.dart';
 
 void main() {
   runApp(const AnalogFaithApp());
@@ -22,7 +23,6 @@ class AnalogFaithApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      // Define your routes here
       routes: {
         '/': (context) => const HomeScreen(),
         '/inventory': (context) => InventoryScreen(),
@@ -32,6 +32,8 @@ class AnalogFaithApp extends StatelessWidget {
         '/inventory/add_lens': (context) => const AddLensesScreen(),
         '/inventory/my_films': (context) => const MyFilmsScreen(),
         '/inventory/add_film': (context) => const AddFilmScreen(),
+        '/darkroom': (context) => const DarkroomScreen(),
+
 
         // Define other routes as needed
       },
