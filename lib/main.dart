@@ -8,6 +8,7 @@ import 'package:analog_faith/screens/add_camera_screen.dart';
 import 'package:analog_faith/screens/my_films_screen.dart';
 import 'package:analog_faith/screens/add_film_screen.dart';
 import 'package:analog_faith/screens/darkroom_screen.dart';
+import 'package:analog_faith/screens/my_films_developing_notes_screen.dart';
 
 void main() {
   runApp(const AnalogFaithApp());
@@ -33,6 +34,8 @@ class AnalogFaithApp extends StatelessWidget {
         '/inventory/my_films': (context) => const MyFilmsScreen(),
         '/inventory/add_film': (context) => const AddFilmScreen(),
         '/darkroom': (context) => const DarkroomScreen(),
+        '/darkroom/my_films_developing_notes': (context) => const MyFilmsDevelopingNotesScreen(),
+
 
 
         // Define other routes as needed
