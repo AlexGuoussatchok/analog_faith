@@ -28,6 +28,8 @@ class DarkroomNotesDatabaseHelper {
         date TEXT,
         film_number INTEGER,
         film TEXT,
+        film_shooting_start_date TEXT,
+        film_shooting_end_date TEXT,
         ISO_shut INTEGER,
         film_type TEXT,
         film_size TEXT,
@@ -39,8 +41,7 @@ class DarkroomNotesDatabaseHelper {
         lab TEXT,
         dilution TEXT,
         developing_time TEXT,
-        temperature TEXT,
-        FNTS TEXT,
+        temperature TEXT,       
         comments TEXT
       )
     ''');

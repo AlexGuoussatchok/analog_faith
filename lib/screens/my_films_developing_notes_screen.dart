@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:analog_faith/screens/develop_new_film_screen.dart'; // Import your screen file
 
 class MyFilmsDevelopingNotesScreen extends StatelessWidget {
-  const MyFilmsDevelopingNotesScreen({super.key});
+  const MyFilmsDevelopingNotesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +17,10 @@ class MyFilmsDevelopingNotesScreen extends StatelessWidget {
               if (value == 'develop_film') {
                 // Handle the "Develop a Film" option here
                 // You can navigate to the film development screen or perform any other action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DevelopNewFilmScreen()),
+                );
               }
             },
             itemBuilder: (BuildContext context) {
