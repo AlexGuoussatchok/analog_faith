@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DevelopNewFilmScreen extends StatefulWidget {
   const DevelopNewFilmScreen({Key? key}) : super(key: key);
@@ -27,6 +28,28 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
   final TextEditingController temperatureController = TextEditingController();
   final TextEditingController commentsController = TextEditingController();
 
+  DateTime selectedDate = DateTime.now();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = (await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2101),
+    )) ?? DateTime.now(); // Provide a default value if picked is null
+    setState(() {
+      selectedDate = picked;
+      dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+    });
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,9 +63,14 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                controller: dateController,
-                decoration: const InputDecoration(labelText: 'Date'),
+              GestureDetector(
+                onTap: () => _selectDate(context),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: dateController,
+                    decoration: const InputDecoration(labelText: 'Date'),
+                  ),
+                ),
               ),
               TextFormField(
                 controller: filmNumberController,
