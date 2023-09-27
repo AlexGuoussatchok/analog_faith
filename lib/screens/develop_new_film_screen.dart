@@ -32,7 +32,9 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
 
   DateTime selectedDate = DateTime.now();
   List<String> filmNames = [];
-  String selectedFilm = ''; // To store the selected film name
+  String selectedFilm = '';
+  DateTime? selectedShootingStartDate = DateTime.now();
+
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
@@ -47,6 +49,20 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
     });
   }
 
+  Future<void> _selectShootingStartDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedShootingStartDate ?? DateTime.now(), // Provide a default value if it's null
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        selectedShootingStartDate = picked;
+        filmShootingStartDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -63,6 +79,8 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
         }
       });
     });
+    filmShootingStartDateController.text = DateFormat('yyyy-MM-dd').format(selectedShootingStartDate ?? DateTime.now());
+
   }
 
   Future<void> _getHighestFilmNumber() async {
@@ -141,10 +159,16 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 decoration: const InputDecoration(labelText: 'Film'),
               ),
 
-              TextFormField(
-                controller: filmShootingStartDateController,
-                decoration: const InputDecoration(labelText: 'Film Shooting Start Date'),
+              GestureDetector(
+                onTap: () => _selectShootingStartDate(context),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: filmShootingStartDateController,
+                    decoration: const InputDecoration(labelText: 'Film Shooting Start Date'),
+                  ),
+                ),
               ),
+
               TextFormField(
                 controller: filmShootingEndDateController,
                 decoration: const InputDecoration(labelText: 'Film Shooting End Date'),
