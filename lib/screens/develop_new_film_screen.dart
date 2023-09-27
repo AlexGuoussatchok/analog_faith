@@ -173,6 +173,33 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
     }
   }
 
+  Future<void> updateFilmDetailsFromDatabase(String selectedFilm) async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      join(databasePath, 'inventory.db'),
+      version: 1,
+    );
+
+    final List<Map<String, dynamic>> maps = await database.query('my_films',
+        where: 'brand || " " || film_name = ?',
+        whereArgs: [selectedFilm]);
+
+    if (maps.isNotEmpty) {
+      final filmSizeValue = maps[0]['film_size'];
+      final filmExpiredValue = maps[0]['film_expired'];
+      final expirationDateValue = maps[0]['expiration_date'];
+
+      filmSizeController.text = filmSizeValue.toString();
+      filmExpiredController.text = filmExpiredValue.toString();
+      filmExpirationDateController.text = expirationDateValue.toString();
+    } else {
+      filmSizeController.text = ''; // Set to empty if film not found
+      filmExpiredController.text = ''; // Set to empty if film not found
+      filmExpirationDateController.text = ''; // Set to empty if film not found
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,7 +235,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                   setState(() {
                     selectedFilm = newValue!;
                     // Update controllers based on the selected film
-                    updateISOShutterAndFilmTypeFromDatabase(selectedFilm);
+                    updateFilmDetailsFromDatabase(selectedFilm);
                   });
                 },
                 items: filmNames.map((film) {
@@ -219,6 +246,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 }).toList(),
                 decoration: const InputDecoration(labelText: 'Film'),
               ),
+
 
 
 
