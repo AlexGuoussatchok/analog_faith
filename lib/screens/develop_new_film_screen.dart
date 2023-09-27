@@ -150,6 +150,28 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
     }
   }
 
+  Future<void> updateISOShutterAndFilmTypeFromDatabase(String selectedFilm) async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      join(databasePath, 'inventory.db'),
+      version: 1,
+    );
+
+    final List<Map<String, dynamic>> maps = await database.query('my_films',
+        where: 'brand || " " || film_name = ?',
+        whereArgs: [selectedFilm]);
+
+    if (maps.isNotEmpty) {
+      final isoShutterValue = maps[0]['film_iso'];
+      final filmTypeValue = maps[0]['film_type'];
+
+      isoShutController.text = isoShutterValue.toString();
+      filmTypeController.text = filmTypeValue.toString();
+    } else {
+      isoShutController.text = ''; // Set to empty if film not found
+      filmTypeController.text = ''; // Set to empty if film not found
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,8 +207,8 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 onChanged: (newValue) {
                   setState(() {
                     selectedFilm = newValue!;
-                    // Update isoShutController based on the selected film
-                    updateISOShutterFromDatabase(selectedFilm);
+                    // Update controllers based on the selected film
+                    updateISOShutterAndFilmTypeFromDatabase(selectedFilm);
                   });
                 },
                 items: filmNames.map((film) {
@@ -197,6 +219,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 }).toList(),
                 decoration: const InputDecoration(labelText: 'Film'),
               ),
+
 
 
               GestureDetector(
@@ -229,10 +252,12 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 controller: filmTypeController,
                 decoration: const InputDecoration(labelText: 'Film Type'),
               ),
+
               TextFormField(
                 controller: filmSizeController,
                 decoration: const InputDecoration(labelText: 'Film Size'),
               ),
+
               TextFormField(
                 controller: filmExpiredController,
                 decoration: const InputDecoration(labelText: 'Film Expired (1 for Yes, 0 for No)'),
