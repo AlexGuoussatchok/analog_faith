@@ -35,7 +35,8 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
   String selectedFilm = '';
   DateTime? selectedShootingStartDate = DateTime.now();
   DateTime? selectedShootingEndDate = DateTime.now();
-
+  String selectedCamera = '';
+  List<String> cameraOptions = [];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
@@ -80,6 +81,20 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
     }
   }
 
+  Future<List<String>> getCameraOptionsFromDatabase() async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      join(databasePath, 'inventory.db'),
+      version: 1,
+    );
+
+    final List<Map<String, dynamic>> maps = await database.query('my_cameras');
+    final List<String> cameraOptions = List.generate(maps.length, (index) {
+      return '${maps[index]['brand']} ${maps[index]['model']} ${maps[index]['serial_number']}';
+    });
+
+    return cameraOptions;
+  }
 
   @override
   void initState() {
@@ -88,16 +103,30 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
 
     // When the screen is opened, check the database for the highest film_number.
     _getHighestFilmNumber();
+
     getFilmNamesFromDatabase().then((names) {
       setState(() {
         filmNames = names;
         if (filmNames.isNotEmpty) {
           selectedFilm = filmNames[0]; // Set the default selected film
+
+          // Update controllers based on the selected film
+          updateISOShutterAndFilmTypeFromDatabase(selectedFilm);
         }
       });
     });
-    filmShootingStartDateController.text = DateFormat('yyyy-MM-dd').format(selectedShootingStartDate ?? DateTime.now());
 
+    // Fetch camera options from the database
+    getCameraOptionsFromDatabase().then((options) {
+      setState(() {
+        cameraOptions = options;
+        if (cameraOptions.isNotEmpty) {
+          selectedCamera = cameraOptions[0]; // Set the default selected camera
+        }
+      });
+    });
+
+    filmShootingStartDateController.text = DateFormat('yyyy-MM-dd').format(selectedShootingStartDate ?? DateTime.now());
   }
 
   Future<void> _getHighestFilmNumber() async {
@@ -193,12 +222,63 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
       filmExpiredController.text = filmExpiredValue.toString();
       filmExpirationDateController.text = expirationDateValue.toString();
     } else {
-      filmSizeController.text = ''; // Set to empty if film not found
-      filmExpiredController.text = ''; // Set to empty if film not found
-      filmExpirationDateController.text = ''; // Set to empty if film not found
+      filmSizeController.text = '';
+      filmExpiredController.text = '';
+      filmExpirationDateController.text = '';
     }
   }
 
+  Future<void> saveFilmDevelopmentData() async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      join(databasePath, 'darkroom_notes.db'),
+      version: 1,
+    );
+
+    // Define the data to be inserted based on your form fields
+    final filmNumber = int.parse(filmNumberController.text);
+    final filmDate = dateController.text;
+    final film = selectedFilm;
+    final shootingStartDate = filmShootingStartDateController.text;
+    final shootingEndDate = filmShootingEndDateController.text;
+    final isoShut = int.parse(isoShutController.text);
+    final filmType = filmTypeController.text;
+    final filmSize = filmSizeController.text;
+    final filmExpired = int.parse(filmExpiredController.text);
+    final filmExpirationDate = filmExpirationDateController.text;
+    final camera = selectedCamera;
+    final lenses = lensesController.text;
+    final developer = developerController.text;
+    final lab = labController.text;
+    final dilution = dilutionController.text;
+    final developingTime = developingTimeController.text;
+    final temperature = temperatureController.text;
+    final comments = commentsController.text;
+
+    // Insert data into the table
+    await database.insert('film_developing_notes', {
+      'date': filmDate,
+      'film_number': filmNumber,
+      'film': film,
+      'film_shooting_start_date': shootingStartDate,
+      'film_shooting_end_date': shootingEndDate,
+      'ISO_shut': isoShut,
+      'film_type': filmType,
+      'film_size': filmSize,
+      'film_expired': filmExpired,
+      'film_expiration_date': filmExpirationDate,
+      'camera': camera,
+      'lenses': lenses,
+      'developer': developer,
+      'lab': lab,
+      'dilution': dilution,
+      'developing_time': developingTime,
+      'temperature': temperature,
+      'comments': comments,
+    });
+
+    // Optionally, you can show a confirmation message or navigate to a different screen after saving.
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +327,6 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 decoration: const InputDecoration(labelText: 'Film'),
               ),
 
-
-
-
               GestureDetector(
                 onTap: () => _selectShootingStartDate(context),
                 child: AbsorbPointer(
@@ -294,10 +371,24 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 controller: filmExpirationDateController,
                 decoration: const InputDecoration(labelText: 'Film Expiration Date'),
               ),
-              TextFormField(
-                controller: cameraController,
+
+              DropdownButtonFormField<String>(
+                value: selectedCamera,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedCamera = newValue!;
+                  });
+                },
+                items: cameraOptions.map((camera) {
+                  return DropdownMenuItem<String>(
+                    value: camera,
+                    child: Text(camera),
+                  );
+                }).toList(),
                 decoration: const InputDecoration(labelText: 'Camera'),
               ),
+
+
               TextFormField(
                 controller: lensesController,
                 decoration: const InputDecoration(labelText: 'Lenses'),
@@ -328,10 +419,12 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  // Add functionality to save film development data
+                  // Call the function to save data when the button is pressed
+                  saveFilmDevelopmentData();
                 },
                 child: const Text('Save'),
               ),
+
             ],
           ),
         ),
