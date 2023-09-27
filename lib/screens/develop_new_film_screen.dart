@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 class DevelopNewFilmScreen extends StatefulWidget {
   const DevelopNewFilmScreen({Key? key}) : super(key: key);
@@ -29,6 +31,8 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
   final TextEditingController commentsController = TextEditingController();
 
   DateTime selectedDate = DateTime.now();
+  List<String> filmNames = [];
+  String selectedFilm = ''; // To store the selected film name
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
@@ -48,6 +52,48 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
   void initState() {
     super.initState();
     dateController.text = DateFormat('yyyy-MM-dd').format(selectedDate);
+
+    // When the screen is opened, check the database for the highest film_number.
+    _getHighestFilmNumber();
+    getFilmNamesFromDatabase().then((names) {
+      setState(() {
+        filmNames = names;
+        if (filmNames.isNotEmpty) {
+          selectedFilm = filmNames[0]; // Set the default selected film
+        }
+      });
+    });
+  }
+
+  Future<void> _getHighestFilmNumber() async {
+    // Open the darkroom_notes database.
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      join(databasePath, 'darkroom_notes.db'),
+      version: 1,
+    );
+
+    // Query the database to get the highest film_number.
+    final results = await database.rawQuery('SELECT MAX(film_number) as max_number FROM film_developing_notes');
+    final maxNumber = results.first['max_number'] as int? ?? 0;
+
+    // Set the initial value of the filmNumberController to maxNumber + 1.
+    filmNumberController.text = (maxNumber + 1).toString();
+  }
+
+  Future<List<String>> getFilmNamesFromDatabase() async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      join(databasePath, 'inventory.db'),
+      version: 1,
+    );
+
+    final List<Map<String, dynamic>> maps = await database.query('my_films');
+    final List<String> filmNames = List.generate(maps.length, (index) {
+      return '${maps[index]['brand']} ${maps[index]['film_name']}';
+    });
+
+    return filmNames;
   }
 
   @override
@@ -72,14 +118,29 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                   ),
                 ),
               ),
+
               TextFormField(
                 controller: filmNumberController,
                 decoration: const InputDecoration(labelText: 'Film Number'),
+                keyboardType: TextInputType.number,
               ),
-              TextFormField(
-                controller: filmController,
+
+              DropdownButtonFormField<String>(
+                value: selectedFilm,
+                onChanged: (newValue) {
+                  setState(() {
+                    selectedFilm = newValue!;
+                  });
+                },
+                items: filmNames.map((film) {
+                  return DropdownMenuItem<String>(
+                    value: film,
+                    child: Text(film),
+                  );
+                }).toList(),
                 decoration: const InputDecoration(labelText: 'Film'),
               ),
+
               TextFormField(
                 controller: filmShootingStartDateController,
                 decoration: const InputDecoration(labelText: 'Film Shooting Start Date'),
