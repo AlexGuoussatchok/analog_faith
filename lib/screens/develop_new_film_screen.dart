@@ -131,6 +131,26 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
     return filmNames;
   }
 
+  Future<void> updateISOShutterFromDatabase(String selectedFilm) async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      join(databasePath, 'inventory.db'),
+      version: 1,
+    );
+
+    final List<Map<String, dynamic>> maps = await database.query('my_films',
+        where: 'brand || " " || film_name = ?',
+        whereArgs: [selectedFilm]);
+
+    if (maps.isNotEmpty) {
+      final isoShutterValue = maps[0]['film_iso'];
+      isoShutController.text = isoShutterValue.toString();
+    } else {
+      isoShutController.text = ''; // Set to empty if film not found
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,6 +185,8 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 onChanged: (newValue) {
                   setState(() {
                     selectedFilm = newValue!;
+                    // Update isoShutController based on the selected film
+                    updateISOShutterFromDatabase(selectedFilm);
                   });
                 },
                 items: filmNames.map((film) {
@@ -175,6 +197,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 }).toList(),
                 decoration: const InputDecoration(labelText: 'Film'),
               ),
+
 
               GestureDetector(
                 onTap: () => _selectShootingStartDate(context),
@@ -198,8 +221,10 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
 
               TextFormField(
                 controller: isoShutController,
-                decoration: const InputDecoration(labelText: 'ISO/Shutter Speed'),
+                decoration: const InputDecoration(labelText: 'ISO shut'),
+                keyboardType: TextInputType.number,
               ),
+
               TextFormField(
                 controller: filmTypeController,
                 decoration: const InputDecoration(labelText: 'Film Type'),
