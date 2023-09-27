@@ -34,6 +34,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
   List<String> filmNames = [];
   String selectedFilm = '';
   DateTime? selectedShootingStartDate = DateTime.now();
+  DateTime? selectedShootingEndDate = DateTime.now();
 
 
   Future<void> _selectDate(BuildContext context) async {
@@ -63,6 +64,22 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
       });
     }
   }
+
+  Future<void> _selectShootingEndDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedShootingEndDate ?? DateTime.now(),
+      firstDate: DateTime(1950),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        selectedShootingEndDate = picked;
+        filmShootingEndDateController.text = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
 
   @override
   void initState() {
@@ -169,10 +186,16 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 ),
               ),
 
-              TextFormField(
-                controller: filmShootingEndDateController,
-                decoration: const InputDecoration(labelText: 'Film Shooting End Date'),
+              GestureDetector(
+                onTap: () => _selectShootingEndDate(context),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: filmShootingEndDateController,
+                    decoration: const InputDecoration(labelText: 'Film Shooting End Date'),
+                  ),
+                ),
               ),
+
               TextFormField(
                 controller: isoShutController,
                 decoration: const InputDecoration(labelText: 'ISO/Shutter Speed'),
