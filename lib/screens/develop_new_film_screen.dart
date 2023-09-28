@@ -40,7 +40,8 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
   List<String> cameraOptions = [];
   int? filmExpired = 0; // 0 means film is not expired, 1 means film is expired
   String selectedDeveloper = ''; // Store the selected developer here
-  String selectedDilution = ''; // Store the selected dilution here
+  String selectedDilution = '';
+  List<String> dilutionsForSelectedDeveloper = [];
 
 
   Future<void> _selectDate(BuildContext context) async {
@@ -439,54 +440,22 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
 
               TextFormField(
                 controller: developerController,
-                decoration: InputDecoration(
-                  labelText: 'Developer',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.arrow_drop_down),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return SimpleDialog(
-                            title: const Text('Select a Developer'),
-                            children: [
-                              SizedBox(
-                                width: 200, // Adjust the width as needed
-                                height: 300, // Adjust the height as needed
-                                child: ListView.builder(
-                                  itemCount: DeveloperData.developers.length,
-                                  itemBuilder: (context, index) {
-                                    final developer = DeveloperData.developers[index];
-                                    return ListTile(
-                                      title: Text(developer),
-                                      onTap: () {
-                                        setState(() {
-                                          selectedDeveloper = developer;
-                                          developerController.text = developer;
-                                        });
-                                        Navigator.of(context).pop(); // Close the dialog
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
+                decoration: const InputDecoration(labelText: 'Developer'),
               ),
+
+              TextFormField(
+                controller: dilutionController,
+                decoration: const InputDecoration(labelText: 'Dilution'),
+              ),
+
+
 
               TextFormField(
                 controller: labController,
                 decoration: const InputDecoration(labelText: 'Lab'),
               ),
-              TextFormField(
-                controller: dilutionController,
-                decoration: const InputDecoration(labelText: 'Dilution'),
-              ),
+
+
               TextFormField(
                 controller: developingTimeController,
                 decoration: const InputDecoration(labelText: 'Developing Time'),
