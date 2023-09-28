@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:analog_faith/lists/developer_data.dart';
 
 class DevelopNewFilmScreen extends StatefulWidget {
   const DevelopNewFilmScreen({Key? key}) : super(key: key);
@@ -37,6 +38,10 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
   DateTime? selectedShootingEndDate = DateTime.now();
   String selectedCamera = '';
   List<String> cameraOptions = [];
+  int? filmExpired = 0; // 0 means film is not expired, 1 means film is expired
+  String selectedDeveloper = ''; // Store the selected developer here
+  String selectedDilution = ''; // Store the selected dilution here
+
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = (await showDatePicker(
@@ -157,8 +162,13 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
       return '${maps[index]['brand']} ${maps[index]['film_name']}';
     });
 
+    // Sort the filmNames list in ascending order
+    filmNames.sort();
+
     return filmNames;
   }
+
+
 
   Future<void> updateISOShutterFromDatabase(String selectedFilm) async {
     final databasePath = await getDatabasesPath();
@@ -244,7 +254,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
     final isoShut = int.parse(isoShutController.text);
     final filmType = filmTypeController.text;
     final filmSize = filmSizeController.text;
-    final filmExpired = int.parse(filmExpiredController.text);
+    final filmExpiredValue = filmExpired; // Use the filmExpired variable
     final filmExpirationDate = filmExpirationDateController.text;
     final camera = selectedCamera;
     final lenses = lensesController.text;
@@ -265,7 +275,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
       'ISO_shut': isoShut,
       'film_type': filmType,
       'film_size': filmSize,
-      'film_expired': filmExpired,
+      'film_expired': filmExpiredValue, // Use the filmExpiredValue variable
       'film_expiration_date': filmExpirationDate,
       'camera': camera,
       'lenses': lenses,
@@ -279,6 +289,7 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
 
     // Optionally, you can show a confirmation message or navigate to a different screen after saving.
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -363,10 +374,42 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 decoration: const InputDecoration(labelText: 'Film Size'),
               ),
 
-              TextFormField(
-                controller: filmExpiredController,
-                decoration: const InputDecoration(labelText: 'Film Expired (1 for Yes, 0 for No)'),
+              Row(
+                children: <Widget>[
+                  const Text('Film Expired:'),
+                  const SizedBox(width: 8),
+                  Row(
+                    children: <Widget>[
+                      Radio<int>(
+                        value: 1,
+                        groupValue: filmExpired,
+                        onChanged: (value) {
+                          setState(() {
+                            filmExpired = value;
+                          });
+                        },
+                      ),
+                      const Text('Yes'),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Radio<int>(
+                        value: 0,
+                        groupValue: filmExpired,
+                        onChanged: (value) {
+                          setState(() {
+                            filmExpired = value;
+                          });
+                        },
+                      ),
+                      const Text('No'),
+                    ],
+                  ),
+                ],
               ),
+
+
               TextFormField(
                 controller: filmExpirationDateController,
                 decoration: const InputDecoration(labelText: 'Film Expiration Date'),
@@ -393,10 +436,49 @@ class _DevelopNewFilmScreenState extends State<DevelopNewFilmScreen> {
                 controller: lensesController,
                 decoration: const InputDecoration(labelText: 'Lenses'),
               ),
+
               TextFormField(
                 controller: developerController,
-                decoration: const InputDecoration(labelText: 'Developer'),
+                decoration: InputDecoration(
+                  labelText: 'Developer',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.arrow_drop_down),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return SimpleDialog(
+                            title: const Text('Select a Developer'),
+                            children: [
+                              SizedBox(
+                                width: 200, // Adjust the width as needed
+                                height: 300, // Adjust the height as needed
+                                child: ListView.builder(
+                                  itemCount: DeveloperData.developers.length,
+                                  itemBuilder: (context, index) {
+                                    final developer = DeveloperData.developers[index];
+                                    return ListTile(
+                                      title: Text(developer),
+                                      onTap: () {
+                                        setState(() {
+                                          selectedDeveloper = developer;
+                                          developerController.text = developer;
+                                        });
+                                        Navigator.of(context).pop(); // Close the dialog
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
               ),
+
               TextFormField(
                 controller: labController,
                 decoration: const InputDecoration(labelText: 'Lab'),
