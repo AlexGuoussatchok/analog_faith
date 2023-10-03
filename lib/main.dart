@@ -9,13 +9,42 @@ import 'package:analog_faith/screens/my_films_screen.dart';
 import 'package:analog_faith/screens/add_film_screen.dart';
 import 'package:analog_faith/screens/darkroom_screen.dart';
 import 'package:analog_faith/screens/my_films_developing_notes_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() {
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Check and request necessary permissions
+  await checkAndRequestPermissions();
+
   runApp(const AnalogFaithApp());
+}
+
+Future<void> checkAndRequestPermissions() async {
+  // List the permissions your app needs
+  final permissions = [
+    Permission.storage,
+    // Add more permissions if needed
+  ];
+
+  // Request multiple permissions at once
+  final statuses = await permissions.request();
+
+  // Check if all permissions are granted
+  if (statuses.values.every((status) => status.isGranted)) {
+
+    // All permissions are granted, you can proceed with your app
+  } else {
+    // Handle the case where some permissions are not granted
+    // You can show a message to the user or take appropriate action
+  }
 }
 
 class AnalogFaithApp extends StatelessWidget {
   const AnalogFaithApp({Key? key});
+
 
   @override
   Widget build(BuildContext context) {

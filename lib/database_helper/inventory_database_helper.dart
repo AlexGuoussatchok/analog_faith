@@ -181,4 +181,34 @@ class InventoryDatabaseHelper {
     return id;
   }
 
+  Future<void> updateCamera(int id, String brand, String model, String serialNumber,
+      String purchaseDate, double pricePaid, String condition, String comments) async {
+    await _database.update(
+      'my_cameras', // Replace with your actual table name
+      {
+        'brand': brand,
+        'model': model,
+        'serial_number': serialNumber,
+        'purchase_date': purchaseDate,
+        'price_paid': pricePaid,
+        'condition': condition,
+        'comments': comments,
+        // Add other fields and their values here
+      },
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<void> deleteCamera(int id) async {
+    final db = await database;
+    await db.delete(
+      'my_cameras',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+
+
 }
